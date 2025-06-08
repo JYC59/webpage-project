@@ -14,8 +14,8 @@
   --color-primary-hover: #3949AB;
   --calendar-day-bg: #E9ECEF;
   --calendar-day-text: #495057;
-  --calendar-day-completed-bg: #9FA8DA;
-  --calendar-day-completed-text: #FFFFFF;
+  --calendar-day-completed-bg: #D4EDDA;
+  --calendar-day-completed-text: #155724;
   --calendar-day-current-border: #3949AB;
   --calendar-day-current-text: #3949AB;
   --calendar-day-current-bg: #FFFFFF;
@@ -28,7 +28,7 @@
 body.dark-mode {
   --bg-primary: #1A1D24;
   --bg-secondary: #252A34;
-  --bg-tertiary: #1F222A; /* 深色模式下主卡片顏色可以稍有不同 */
+  --bg-tertiary: #1F222A;
   --text-primary: #EAEBEE;
   --text-secondary: #98A1B3;
   --text-accent: #7986CB;
@@ -40,8 +40,8 @@ body.dark-mode {
   --color-primary-hover: #7986CB;
   --calendar-day-bg: #3E4452;
   --calendar-day-text: #EAEBEE;
-  --calendar-day-completed-bg: #5C6BC0;
-  --calendar-day-completed-text: #FFFFFF;
+  --calendar-day-completed-bg: #2E4C3C;
+  --calendar-day-completed-text: #81C784;
   --calendar-day-current-border: #7986CB;
   --calendar-day-current-text: #7986CB;
   --calendar-day-current-bg: #1A1D24;
@@ -54,8 +54,6 @@ body {
   transition: background-color 0.3s ease;
   font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
-
-/* 讓所有顏色變化都有平滑過渡效果 */
 * {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
@@ -83,32 +81,19 @@ body {
   color: var(--text-primary);
   letter-spacing: 1.5px;
   font-weight: 600;
-  margin: 0; /* 移除 h2 的預設 margin */
+  margin: 0;
 }
 
 .theme-toggle-button {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
-  padding: 8px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%); background: transparent; border: none;
+  cursor: pointer; font-size: 24px; padding: 8px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 .theme-toggle-button:hover {
   background-color: var(--calendar-day-bg);
   transform: translateY(-50%) scale(1.1);
-}
-.theme-toggle-button:active {
-  transform: translateY(-50%) scale(0.95);
 }
 
 .main-welcome {
@@ -226,6 +211,15 @@ body {
   color: var(--calendar-day-current-text);
   background-color: var(--calendar-day-current-bg);
 }
+
+/* *** HIGHLIGHT START: 新增這一條規則來解決衝突 *** */
+/* 當天日期，且已完成挑戰的特殊樣式 */
+.calendar-day.completed.current-day {
+  background-color: var(--calendar-day-completed-bg); /* 使用綠色背景 */
+  color: var(--calendar-day-completed-text);      /* 使用綠色文字 */
+  border-color: var(--calendar-day-current-border);  /* 保留藍色外框 */
+}
+/* *** HIGHLIGHT END *** */
 
 .main-menu {
   display: flex;
