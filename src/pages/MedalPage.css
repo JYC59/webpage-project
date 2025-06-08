@@ -1,4 +1,4 @@
-/* --- 1. CSS 變數定義 (預設為白天模式) --- */
+/* --- 1. CSS 變數定義 (與其他頁面共用) --- */
 :root {
   --bg-primary: #FFFFFF;
   --bg-secondary: #F8F9FE;
@@ -6,25 +6,18 @@
   --text-primary: #212529;
   --text-secondary: #5C677D;
   --text-accent: #3949AB;
-  --text-on-accent: #FFFFFF;
-  --text-success: #28a745;
-  --text-danger: #d32f2f;
   --text-placeholder: #AEB5C4;
-  --color-primary: #5C6BC0;
-  --color-primary-hover: #3949AB;
-  --calendar-day-bg: #E9ECEF;
-  --calendar-day-text: #495057;
-  --calendar-day-completed-bg: #D4EDDA;
-  --calendar-day-completed-text: #155724;
-  --calendar-day-current-border: #3949AB;
-  --calendar-day-current-text: #3949AB;
-  --calendar-day-current-bg: #FFFFFF;
+  --border-color: #DEE2E6;
   --shadow-color: rgba(60, 80, 160, 0.1);
   --shadow-soft: 0 4px 24px var(--shadow-color);
   --shadow-light: 0 2px 8px var(--shadow-color);
+
+  /* 新增：勳章專用顏色 */
+  --medal-achieved-bg: #FFFDE7;
+  --medal-achieved-border: #FFD600;
+  --medal-achieved-text: #FF8F00;
 }
 
-/* --- 2. 深夜模式 (Dark Mode) 變數覆寫 --- */
 body.dark-mode {
   --bg-primary: #1A1D24;
   --bg-secondary: #252A34;
@@ -32,44 +25,30 @@ body.dark-mode {
   --text-primary: #EAEBEE;
   --text-secondary: #98A1B3;
   --text-accent: #7986CB;
-  --text-on-accent: #FFFFFF;
-  --text-success: #4CAF50;
-  --text-danger: #EF5350;
   --text-placeholder: #5C677D;
-  --color-primary: #5C6BC0;
-  --color-primary-hover: #7986CB;
-  --calendar-day-bg: #3E4452;
-  --calendar-day-text: #EAEBEE;
-  --calendar-day-completed-bg: #2E4C3C;
-  --calendar-day-completed-text: #81C784;
-  --calendar-day-current-border: #7986CB;
-  --calendar-day-current-text: #7986CB;
-  --calendar-day-current-bg: #1A1D24;
+  --border-color: #495057;
   --shadow-color: rgba(0, 0, 0, 0.2);
+
+  /* 新增：勳章專用顏色 (深夜模式) */
+  --medal-achieved-bg: #423B2E;
+  --medal-achieved-border: #FBC02D;
+  --medal-achieved-text: #FBC02D;
 }
 
-/* --- 3. 通用與全域樣式 --- */
-body {
-  background-color: var(--bg-primary);
-  transition: background-color 0.3s ease;
-  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-}
-* {
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
 
-/* --- 4. 元件樣式 (使用變數) --- */
-.main-container {
+/* --- 2. 元件樣式 (使用變數) --- */
+.medal-container {
   max-width: 520px;
   margin: 40px auto;
-  padding: 32px;
   background: var(--bg-tertiary);
   border-radius: 20px;
   box-shadow: var(--shadow-soft);
+  padding: 32px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   text-align: center;
 }
 
-.main-header {
+.medal-header {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,13 +56,14 @@ body {
   margin-bottom: 12px;
 }
 
-.main-container h2 {
+.medal-header h2 {
   color: var(--text-primary);
   letter-spacing: 1.5px;
   font-weight: 600;
   margin: 0;
 }
 
+/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
 .theme-toggle-button {
   position: absolute; right: 0; top: 50%;
   transform: translateY(-50%); background: transparent; border: none;
@@ -92,166 +72,117 @@ body {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 .theme-toggle-button:hover {
-  background-color: var(--calendar-day-bg);
+  background-color: var(--bg-secondary);
   transform: translateY(-50%) scale(1.1);
 }
 
-.main-welcome {
+.medal-welcome {
   font-size: 18px;
   color: var(--text-accent);
   margin-bottom: 28px;
   font-weight: 500;
 }
 
-.main-daily-challenge {
-  background: var(--bg-secondary);
-  border-radius: 16px;
-  padding: 20px;
-  margin-bottom: 32px;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 20px;
-}
-
-.challenge-info { flex-grow: 1; }
-
-.main-challenge-title {
-  font-size: 18px;
-  color: var(--text-accent);
-  font-weight: bold;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.main-challenge-desc {
-  font-size: 16px;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-}
-
-.main-challenge-status {
-  margin-bottom: 12px;
+.medal-loading {
+  color: var(--text-placeholder);
+  font-style: italic;
+  margin: 40px 0;
   font-size: 16px;
 }
 
-.main-challenge-done { color: var(--text-success); font-weight: bold; }
-.main-challenge-notyet { color: var(--text-danger); font-weight: bold; }
-.main-challenge-loading { color: var(--text-placeholder); font-style: italic; }
+.medal-progress {
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 28px;
+}
 
-.main-challenge-friends {
-  margin-top: 8px;
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.progress-label {
   font-size: 14px;
   color: var(--text-secondary);
+  margin-bottom: 4px;
 }
 
-.main-challenge-friend-title { font-weight: bold; margin-right: 6px; }
-
-.main-challenge-friend {
-  background: var(--color-primary);
-  color: var(--text-on-accent);
-  border-radius: 12px;
-  padding: 3px 12px;
-  margin-right: 6px;
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.main-challenge-none { color: var(--text-placeholder); }
-
-.challenge-calendar-container {
-  background-color: var(--bg-tertiary);
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: var(--shadow-light);
-  flex-shrink: 0;
-}
-
-.challenge-calendar-header {
-  font-size: 14px;
-  font-weight: 600;
+.progress-count {
+  font-size: 22px;
+  font-weight: bold;
   color: var(--text-accent);
-  margin-bottom: 10px;
-  text-align: center;
 }
 
-.challenge-calendar {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
-}
-
-.calendar-day {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--calendar-day-text);
-  background-color: var(--calendar-day-bg);
-  border: 2px solid transparent;
-}
-
-.calendar-day.completed {
-  background-color: var(--calendar-day-completed-bg);
-  color: var(--calendar-day-completed-text);
-  font-weight: bold;
-}
-
-.calendar-day.current-day {
-  border-color: var(--calendar-day-current-border);
-  font-weight: bold;
-  color: var(--calendar-day-current-text);
-  background-color: var(--calendar-day-current-bg);
-}
-
-/* *** HIGHLIGHT START: 新增這一條規則來解決衝突 *** */
-/* 當天日期，且已完成挑戰的特殊樣式 */
-.calendar-day.completed.current-day {
-  background-color: var(--calendar-day-completed-bg); /* 使用綠色背景 */
-  color: var(--calendar-day-completed-text);      /* 使用綠色文字 */
-  border-color: var(--calendar-day-current-border);  /* 保留藍色外框 */
-}
-/* *** HIGHLIGHT END *** */
-
-.main-menu {
+.medal-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  align-items: stretch; /* 讓所有項目等寬 */
+}
+
+.medal-item {
+  display: flex;
   align-items: center;
-  margin-top: 24px;
-}
-
-.main-menu button {
-  width: 240px;
-  padding: 14px 0;
-  border: none;
-  border-radius: 10px;
-  background: var(--color-primary);
-  color: var(--text-on-accent);
-  font-size: 17px;
-  font-weight: 600;
-  cursor: pointer;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
   box-shadow: var(--shadow-light);
-  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  opacity: 0.6; /* 未獲得的勳章半透明 */
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
 }
 
-.main-menu button:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px var(--shadow-color);
+.medal-item.achieved {
+  opacity: 1;
+  background: var(--medal-achieved-bg);
+  border-color: var(--medal-achieved-border);
+  transform: scale(1.02);
 }
 
-/* --- 5. 響應式設計 (RWD) --- */
+.medal-icon {
+  font-size: 36px;
+  margin-right: 16px;
+  line-height: 1;
+}
+
+.medal-info {
+  flex: 1;
+  text-align: left;
+}
+
+.medal-name {
+  font-weight: bold;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+.medal-item.achieved .medal-name {
+  color: var(--medal-achieved-text);
+}
+
+.medal-desc {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.medal-status {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-align: right;
+  min-width: 60px; /* 確保寬度一致 */
+}
+.medal-item.achieved .medal-status {
+  color: var(--medal-achieved-text);
+  font-weight: bold;
+}
+
+/* 響應式設計 */
 @media (max-width: 500px) {
-  .main-container {
+  .medal-container {
     max-width: 100%;
     margin: 0;
     border-radius: 0;
@@ -259,8 +190,4 @@ body {
     padding: 24px 16px;
     box-shadow: none;
   }
-  .main-daily-challenge { flex-direction: column; align-items: stretch; gap: 16px; }
-  .challenge-calendar-container { margin-top: 16px; }
-  .calendar-day { width: auto; height: 32px; }
-  .main-menu button { width: 100%; }
 }
