@@ -21,14 +21,23 @@
   margin-bottom: 28px;
   font-weight: 500;
 }
-
 .main-daily-challenge {
   background: #f6f8fc;
   border-radius: 12px;
-  padding: 18px 18px 14px 18px;
+  padding: 18px; /* Simplified padding */
   margin-bottom: 28px;
   box-shadow: 0 1px 6px rgba(60,80,160,0.08);
   text-align: left;
+  /* New flex properties */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Align items to the top */
+  gap: 16px; /* Add some space between info and calendar */
+}
+
+/* Container for the text on the left */
+.challenge-info {
+  flex-grow: 1; /* Allow it to take available space */
 }
 
 .main-challenge-title {
@@ -102,7 +111,52 @@
 .main-challenge-none {
   color: #bdbdbd;
 }
+.challenge-calendar-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  flex-shrink: 0; /* Prevent the calendar from shrinking */
+}
 
+.challenge-calendar-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #3949ab;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.challenge-calendar {
+  display: grid;
+  /* 7 columns for 7 days a week */
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px; /* Spacing between days */
+}
+
+.calendar-day {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  font-size: 14px;
+  color: #26326a;
+  background-color: #f1f3f4; /* Neutral light gray background for days */
+  border: 2px solid transparent; /* Reserve space for border */
+}
+
+/* Style for completed days (optional, can be enabled by styling this class) */
+/* .calendar-day.completed { background-color: #c5cae9; } */
+
+/* Style for the current day, as seen in the image */
+.calendar-day.current-day {
+  border-color: #3949ab;
+  font-weight: bold;
+  color: #3949ab;
+  background-color: #fff; /* White background inside the circle */
+}
 .main-menu {
   display: flex;
   flex-direction: column;
@@ -134,6 +188,23 @@
     max-width: 98vw;
     padding: 18px 4vw 18px 4vw;
   }
+  
+  /* Make the daily challenge section stack vertically on small screens */
+  .main-daily-challenge {
+    flex-direction: column;
+    align-items: stretch; /* Stretch children to full width */
+  }
+
+  .challenge-calendar-container {
+    margin-top: 16px;
+  }
+  
+  .calendar-day {
+    /* Auto width and fixed height works well for responsiveness */
+    width: auto;
+    height: 30px;
+  }
+  
   .main-menu button {
     width: 95vw;
     min-width: 0;
