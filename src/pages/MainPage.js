@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PageHeader from '../components/PageHeader'; 
 import { useNavigate } from 'react-router-dom';
 import './MainPage.css';
 import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
@@ -88,12 +89,12 @@ function MainPage({ userName }) {
   return (
     <div className="main-container">
       {/* *** HIGHLIGHT START: 已移除多餘的 h1 和 h2 標題 *** */}
-      <div className="main-header">
-        <h2>主畫面</h2>
-        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
+     <PageHeader
+        title="主畫面"
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+        showBackButton={false} // 特別設定為 false，因為主畫面不需要返回按鈕
+      />
       {/* *** HIGHLIGHT END *** */}
       <div className="main-welcome">
         歡迎，{userName}！
