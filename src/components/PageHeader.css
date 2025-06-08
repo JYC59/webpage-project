@@ -1,0 +1,50 @@
+.page-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 24px; /* 給予標題和下方內容足夠的空間 */
+  width: 100%;
+}
+
+.page-header h2 {
+  color: var(--text-primary);
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0;
+  padding: 0 50px; /* 確保標題不會和兩側按鈕重疊 */
+  text-align: center;
+}
+
+.back-button, .theme-toggle-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  width: 44px; /* 固定寬高讓點擊區域更大 */
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.back-button {
+  left: -10px; /* 稍微往外放一點 */
+  font-size: 28px;
+}
+
+.theme-toggle-button {
+  right: -10px; /* 稍微往外放一點 */
+}
+
+.back-button:hover, .theme-toggle-button:hover {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PageHeader from '../components/PageHeader'; 
 import './ConversationsPage.css';
 import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -64,12 +65,12 @@ function ConversationsPage({ userName }) {
   return (
     <div className="conv-container">
       {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
-      <div className="conv-header">
-        <h2>對話歷史</h2>
-        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
+      <PageHeader 
+        title="對話歷史"
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+        showBackButton={true} // 明確告訴組件要顯示返回按鈕
+      />
       <div className="conv-welcome">
         歡迎，{userName}！
       </div>

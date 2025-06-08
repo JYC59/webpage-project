@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PageHeader from '../components/PageHeader'; 
 import './AiChatPage.css';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -106,12 +107,12 @@ function AiChatPage({ userName }) {
   return (
     <div className="aichat-container">
       {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
-      <div className="aichat-header">
-        <h2>AI語音對話</h2>
-        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
+      <PageHeader 
+        title="AI語音對話"
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+        showBackButton={true} // 明確告訴組件要顯示返回按鈕
+      />
       <div className="aichat-welcome">
         歡迎，{userName}！
       </div>

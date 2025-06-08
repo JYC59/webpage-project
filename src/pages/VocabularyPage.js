@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import PageHeader from '../components/PageHeader'; 
 import './VocabularyPage.css';
 import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -99,12 +100,12 @@ function VocabularyPage({ userName }) {
   return (
     <div className="vocab-container">
       {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
-      <div className="vocab-header">
-        <h2>學習單字</h2>
-        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
+      <PageHeader 
+        title="學習單字"
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+        showBackButton={true} // 明確告訴組件要顯示返回按鈕
+      />
       <div className="vocab-welcome">
         歡迎，{userName}！
       </div>

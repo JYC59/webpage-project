@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import PageHeader from '../components/PageHeader'; 
 import './FriendPage.css';
 import { collection, doc, getDoc, setDoc, getDocs, query, where, documentId } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -111,12 +112,12 @@ function FriendPage({ userName }) {
   return (
     <div className="friend-container">
       {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
-      <div className="friend-header">
-        <h2>好友與排行榜</h2>
-        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
-          {isDarkMode ? '☀️' : '🌙'}
-        </button>
-      </div>
+      <PageHeader 
+        title="好友與排行榜"
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+        showBackButton={true} // 明確告訴組件要顯示返回按鈕
+      />
       <div className="friend-welcome">歡迎，{userName}！</div>
       {/* *** HIGHLIGHT END *** */}
 
