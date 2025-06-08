@@ -1,61 +1,159 @@
+/* --- 1. CSS 變數定義 (與其他頁面共用) --- */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FE;
+  --bg-tertiary: #FFFFFF;
+  --text-primary: #212529;
+  --text-secondary: #5C677D;
+  --text-accent: #3949AB;
+  --text-placeholder: #AEB5C4;
+  --shadow-color: rgba(60, 80, 160, 0.1);
+  --shadow-soft: 0 4px 24px var(--shadow-color);
+  --shadow-light: 0 2px 8px var(--shadow-color);
+}
+
+body.dark-mode {
+  --bg-primary: #1A1D24;
+  --bg-secondary: #252A34;
+  --bg-tertiary: #1F222A;
+  --text-primary: #EAEBEE;
+  --text-secondary: #98A1B3;
+  --text-accent: #7986CB;
+  --text-placeholder: #5C677D;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+}
+
+
+/* --- 2. 元件樣式 (使用變數) --- */
 .conv-container {
-    max-width: 520px;
-    margin: 40px auto;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-    padding: 32px 32px 60px 32px;
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  max-width: 520px;
+  margin: 40px auto;
+  background: var(--bg-tertiary);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  padding: 32px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.conv-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.conv-header h2 {
+  color: var(--text-primary);
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
+.theme-toggle-button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-button:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.conv-welcome {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-accent);
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+
+.conv-loading, .conv-empty {
+  color: var(--text-placeholder);
+  font-style: italic;
+  margin: 40px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.conv-record {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-light);
+}
+
+.conv-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color, #E9ECEF); /* Fallback color */
+}
+
+body.dark-mode .conv-info {
+  border-bottom-color: var(--border-color, #3E4452);
+}
+
+.conv-scenario {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--text-accent);
+  background-color: rgba(92, 107, 192, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+body.dark-mode .conv-scenario {
+  background-color: rgba(121, 134, 203, 0.2);
+}
+
+.conv-time {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.conv-q, .conv-a {
+  margin: 8px 0;
+  font-size: 16px;
+  line-height: 1.6;
+  word-break: break-word;
+  color: var(--text-primary);
+}
+
+.conv-label {
+  font-weight: bold;
+  color: var(--text-accent);
+  margin-right: 6px;
+}
+
+/* 響應式設計 */
+@media (max-width: 500px) {
+  .conv-container {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 24px 16px;
+    box-shadow: none;
   }
-  
-  .conv-welcome {
-    font-size: 17px;
-    color: #3949ab;
-    margin-bottom: 18px;
-    font-weight: 500;
-  }
-  
-  .conv-loading {
-    color: #888;
-    font-style: italic;
-    margin: 20px 0;
-    text-align: center;
-  }
-  
-  .conv-empty {
-    color: #bdbdbd;
-    text-align: center;
-    margin: 24px 0;
-  }
-  
-  .conv-list {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
-  
-  .conv-record {
-    background: #f6f8fc;
-    border-radius: 10px;
-    padding: 14px 18px 36px 18px;
-    box-shadow: 0 1px 4px rgba(60,80,160,0.06);
-  }
-  
-  .conv-time {
-    font-size: 13px;
-    color: #888;
-    margin-bottom: 6px;
-    text-align: right;
-  }
-  
-  .conv-q, .conv-a {
-    margin: 2px 0;
-    font-size: 15px;
-    word-break: break-word;
-  }
-  
-  .conv-label {
-    font-weight: bold;
-    color: #3949ab;
-    margin-right: 4px;
-  }  
+}

@@ -1,97 +1,196 @@
+/* --- 1. CSS 變數定義 (與其他頁面共用) --- */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FE;
+  --bg-tertiary: #FFFFFF;
+  --text-primary: #212529;
+  --text-secondary: #5C677D;
+  --text-accent: #3949AB;
+  --text-on-accent: #FFFFFF;
+  --text-placeholder: #AEB5C4;
+  --border-color: #DEE2E6;
+  --shadow-color: rgba(60, 80, 160, 0.1);
+  --shadow-soft: 0 4px 24px var(--shadow-color);
+  --shadow-light: 0 2px 8px var(--shadow-color);
+  
+  /* 狀態顏色 */
+  --color-primary: #5C6BC0;
+  --color-primary-hover: #3949AB;
+  --color-success: #43a047;
+  --color-danger: #d32f2f;
+  --color-info: #1976d2;
+
+  /* 新增：排行榜專用顏色 */
+  --ranking-me-bg: #FFFDE7;
+  --ranking-me-border: #FFD600;
+  --ranking-me-text: #FF8F00;
+}
+
+body.dark-mode {
+  --bg-primary: #1A1D24;
+  --bg-secondary: #252A34;
+  --bg-tertiary: #1F222A;
+  --text-primary: #EAEBEE;
+  --text-secondary: #98A1B3;
+  --text-accent: #7986CB;
+  --text-on-accent: #FFFFFF;
+  --text-placeholder: #5C677D;
+  --border-color: #495057;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+
+  /* 狀態顏色 (深夜模式) */
+  --color-success: #4CAF50;
+  --color-danger: #EF5350;
+  --color-info: #42a5f5;
+
+  /* 新增：排行榜專用顏色 (深夜模式) */
+  --ranking-me-bg: #423B2E;
+  --ranking-me-border: #FBC02D;
+  --ranking-me-text: #FBC02D;
+}
+
+
+/* --- 2. 元件樣式 (使用變數) --- */
 .friend-container {
-  max-width: 520px;
-  margin: 40px auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  padding: 32px 32px 60px 32px;
-  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  max-width: 520px; margin: 40px auto;
+  background: var(--bg-tertiary); border-radius: 20px;
+  box-shadow: var(--shadow-soft); padding: 32px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
   text-align: center;
 }
 
+.friend-header {
+  display: flex; justify-content: center; align-items: center;
+  position: relative; margin-bottom: 12px;
+}
+
+.friend-header h2 {
+  color: var(--text-primary); letter-spacing: 1.5px;
+  font-weight: 600; margin: 0;
+}
+
+/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
+.theme-toggle-button {
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%); background: transparent; border: none;
+  cursor: pointer; font-size: 24px; padding: 8px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-button:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-50%) scale(1.1);
+}
+
 .friend-welcome {
-  font-size: 17px;
-  color: #3949ab;
-  margin-bottom: 18px;
-  font-weight: 500;
+  font-size: 18px; color: var(--text-accent);
+  margin-bottom: 28px; font-weight: 500;
 }
 
 .friend-add {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  margin-bottom: 14px;
+  display: flex; gap: 10px;
+  justify-content: center; margin-bottom: 16px;
 }
 
 .friend-input {
-  padding: 7px 12px;
-  font-size: 15px;
-  border-radius: 6px;
-  border: 1px solid #bdbdbd;
-  width: 120px;
+  padding: 10px 12px; font-size: 16px; border-radius: 8px;
+  border: 1.5px solid var(--border-color); width: 180px;
+  text-align: center; background-color: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.friend-input:focus {
+  outline: none; border-color: var(--color-primary);
 }
 
 .friend-btn {
-  padding: 7px 16px;
-  border: none;
-  border-radius: 6px;
-  background: #3949ab;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s;
+  padding: 10px 18px; border: none; border-radius: 8px;
+  background: var(--color-primary); color: var(--text-on-accent);
+  font-size: 16px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s ease;
 }
-
 .friend-btn:hover {
-  background: #26326a;
+  background: var(--color-primary-hover);
+  transform: translateY(-2px); box-shadow: var(--shadow-light);
 }
 
 .friend-msg {
-  color: #d32f2f;
-  font-size: 14px;
-  margin-bottom: 10px;
+  font-size: 14px; margin-bottom: 16px; font-weight: 500;
+  padding: 8px; border-radius: 6px;
+}
+.friend-msg.success { background-color: rgba(67, 160, 71, 0.2); color: var(--color-success); }
+.friend-msg.error { background-color: rgba(211, 47, 47, 0.2); color: var(--color-danger); }
+.friend-msg.info { background-color: rgba(25, 118, 210, 0.2); color: var(--color-info); }
+
+.friend-loading {
+  color: var(--text-placeholder); font-style: italic;
+  margin: 40px 0; font-size: 16px;
+}
+
+.rankings-container {
+  display: flex; flex-direction: column; gap: 24px;
 }
 
 .friend-list-title {
-  margin: 24px 0 8px 0;
-  font-size: 16px;
-  color: #26326a;
-  font-weight: bold;
-  border-bottom: 1.5px solid #bdbdbd;
-  padding-bottom: 4px;
-}
-
-.friend-loading {
-  color: #888;
-  font-style: italic;
-  margin: 20px 0;
+  margin: 16px 0 12px 0; font-size: 18px;
+  color: var(--text-primary); font-weight: bold;
+  border-bottom: 1.5px solid var(--border-color);
+  padding-bottom: 8px;
 }
 
 .friend-list {
-  width: 100%;
-  margin: 0 auto 18px auto;
+  width: 100%; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 8px;
 }
 
-.friend-list-header,
-.friend-list-row {
-  display: flex;
-  justify-content: space-between;
-  background: #f6f8fc;
-  border-radius: 7px;
-  padding: 8px 12px;
-  font-size: 15px;
-  margin-bottom: 6px;
-  align-items: center;
+.friend-list-header, .friend-list-row {
+  display: grid; grid-template-columns: 50px 1fr 1fr;
+  padding: 10px 16px; font-size: 16px;
+  align-items: center; text-align: left;
 }
 
 .friend-list-header {
-  background: #e8eaf6;
-  font-weight: bold;
-  color: #3949ab;
+  background: var(--bg-secondary); border-radius: 10px;
+  font-weight: bold; color: var(--text-accent);
+  padding: 12px 16px;
+}
+.friend-list-header span:last-child,
+.friend-list-row .rank-score { text-align: right; }
+
+.friend-list-row {
+  background: var(--bg-secondary); border-radius: 8px;
+  color: var(--text-primary); transition: all 0.2s ease;
+}
+.friend-list-row:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-light);
 }
 
 .friend-list-row.me {
-  background: #fffde7;
-  border: 2px solid #ffd600;
+  background: var(--ranking-me-bg);
+  border: 2px solid var(--ranking-me-border);
+  font-weight: bold;
+  color: var(--ranking-me-text);
+  transform: scale(1.02);
+}
+.friend-list-row.me:hover {
+  transform: scale(1.02) translateX(4px);
+}
+.friend-list-row.me .rank-name {
+  color: var(--ranking-me-text);
+}
+
+.rank-position { color: var(--text-secondary); }
+.friend-list-row.me .rank-position { color: var(--ranking-me-text); opacity: 0.8; }
+.rank-name { color: var(--text-primary); font-weight: 500; }
+.rank-score { color: var(--text-secondary); font-weight: 500; }
+.friend-list-row.me .rank-score { color: var(--ranking-me-text); }
+
+
+/* 響應式設計 */
+@media (max-width: 500px) {
+  .friend-container {
+    max-width: 100%; margin: 0; border-radius: 0;
+    min-height: 100vh; padding: 24px 16px;
+    box-shadow: none;
+  }
 }

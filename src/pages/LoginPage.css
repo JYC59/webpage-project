@@ -1,79 +1,175 @@
+/* --- 1. CSS 變數定義 (與其他頁面共用) --- */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FE;
+  --bg-tertiary: #FFFFFF;
+  --text-primary: #212529;
+  --text-secondary: #5C677D;
+  --text-accent: #3949AB;
+  --text-on-accent: #FFFFFF;
+  --border-color: #DEE2E6;
+  --shadow-color: rgba(60, 80, 160, 0.1);
+  --shadow-soft: 0 4px 24px var(--shadow-color);
+  
+  /* 狀態顏色 */
+  --color-primary: #5C6BC0;
+  --color-primary-hover: #3949AB;
+  --color-success: #43a047;
+  --color-success-hover: #2e7d32;
+  --color-danger: #d32f2f;
+}
+
+body.dark-mode {
+  --bg-primary: #1A1D24;
+  --bg-secondary: #252A34;
+  --bg-tertiary: #1F222A;
+  --text-primary: #EAEBEE;
+  --text-secondary: #98A1B3;
+  --text-accent: #7986CB;
+  --text-on-accent: #FFFFFF;
+  --border-color: #495057;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+
+  /* 狀態顏色 (深夜模式) */
+  --color-success: #4CAF50;
+  --color-success-hover: #66BB6A;
+  --color-danger: #EF5350;
+}
+
+
+/* --- 2. 元件樣式 (使用變數) --- */
 .login-container {
-    max-width: 520px;
-    margin: 40px auto;
-    padding: 32px 32px 60px 32px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1.5px 4px rgba(0,0,0,0.10);
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  max-width: 420px; /* 登入頁面可以窄一點 */
+  margin: 80px auto;
+  background: var(--bg-tertiary);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  padding: 32px 40px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.login-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 32px;
+}
+
+.login-header h2 {
+  color: var(--text-primary);
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
+.theme-toggle-button {
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%); background: transparent; border: none;
+  cursor: pointer; font-size: 24px; padding: 8px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-button:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.login-form .form-group {
+  margin-bottom: 20px;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-accent);
+  text-align: left;
+}
+
+.login-form input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: border-color 0.2s;
+}
+
+.login-form input:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.login-form .form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.login-form button {
+  flex-grow: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  color: var(--text-on-accent);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.login-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-soft);
+}
+
+.login-form button[type="submit"] {
+  background: var(--color-primary);
+}
+.login-form button[type="submit"]:hover {
+  background: var(--color-primary-hover);
+}
+
+.login-form button[type="button"] {
+  background: var(--color-success);
+}
+.login-form button[type="button"]:hover {
+  background: var(--color-success-hover);
+}
+
+.login-message {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.login-message.error {
+  color: var(--color-danger);
+  background-color: rgba(211, 47, 47, 0.15);
+}
+.login-message.success {
+  color: var(--color-success);
+  background-color: rgba(67, 160, 71, 0.15);
+}
+
+/* 響應式設計 */
+@media (max-width: 500px) {
+  .login-container {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 32px 24px;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
-  
-  .login-container h2 {
-    text-align: center;
-    margin-bottom: 28px;
-    color: #1a237e;
-    letter-spacing: 1px;
-  }
-  
-  .login-form label {
-    display: block;
-    margin-bottom: 6px;
-    font-weight: 500;
-    color: #3949ab;
-  }
-  
-  .login-form input {
-    width: 93%;
-    padding: 10px 12px;
-    margin-bottom: 18px;
-    border: 1px solid #bdbdbd;
-    border-radius: 6px;
-    font-size: 16px;
-    background: #f6f8fc;
-    transition: border 0.2s;
-  }
-  
-  .login-form input:focus {
-    border: 1.5px solid #3949ab;
-    outline: none;
-  }
-  
-  .login-form button {
-    padding: 10px 24px;
-    margin-right: 8px;
-    border: none;
-    border-radius: 6px;
-    background: #3949ab;
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
-  
-  .login-form button[type="button"] {
-    background: #43a047;
-  }
-  
-  .login-form button:hover {
-    background: #1a237e;
-  }
-  
-  .login-form button[type="button"]:hover {
-    background: #2e7031;
-  }
-  
-  .login-message {
-    text-align: center;
-    margin-top: 16px;
-    font-size: 15px;
-  }
-  
-  .login-message.error {
-    color: #d32f2f;
-  }
-  
-  .login-message.success {
-    color: #388e3c;
-  }
-  
+}

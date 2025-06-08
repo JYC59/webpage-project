@@ -1,104 +1,125 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './FriendPage.css';
-import { collection, doc, getDoc, setDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, setDoc, getDocs, query, where, documentId } from 'firebase/firestore';
 import { db } from '../firebase';
 
+// 勳章定義 (與勳章頁面同步)
+const MEDALS = [
+  { id: 'vocab10', type: 'vocab', target: 10 },
+  { id: 'vocab30', type: 'vocab', target: 30 },
+  { id: 'conv10', type: 'conversation', target: 10 },
+  { id: 'conv50', type: 'conversation', target: 50 },
+  { id: 'conv100', type: 'conversation', target: 100 }
+];
+
 function FriendPage({ userName }) {
-  const [friendInput, setFriendInput] = useState('');
-  const [friends, setFriends] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
-  const [friendStats, setFriendStats] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [msg, setMsg] = useState('');
-
-  // 提取 fetchFriends，讓 handleAddFriend 也能用
-  const fetchFriends = async () => {
-    setLoading(true);
-    setMsg('');
-    // 取得所有用戶（查 Users 集合）
-    const usersSnap = await getDocs(collection(db, 'Users'));
-    const users = [];
-    usersSnap.forEach(doc => users.push(doc.id));
-    setAllUsers(users);
-
-    // 取得自己的好友清單
-    const friendDoc = await getDoc(doc(db, 'Friends', userName));
-    let friendArr = [];
-    if (friendDoc.exists() && Array.isArray(friendDoc.data().friends)) {
-      friendArr = friendDoc.data().friends;
-    }
-    setFriends(friendArr);
-
-    // 取得好友與自己 stats
-    const stats = [];
-    for (const name of [userName, ...friendArr]) {
-      // 單字數
-      const wordSnap = await getDocs(collection(db, 'UserVocabulary', name, 'words'));
-      let vocabPassed = 0;
-      wordSnap.forEach(doc => {
-        if (doc.data().passed) vocabPassed += 1;
-      });
-      // 對話數
-      const convSnap = await getDocs(collection(db, 'Conversations'));
-      let convCount = 0;
-      convSnap.forEach(doc => {
-        if (doc.data().user_name === name) convCount += 1;
-      });
-      // 勳章數（這裡以單字10/30、對話10/50為例）
-      let medal = 0;
-      if (vocabPassed >= 10) medal++;
-      if (vocabPassed >= 30) medal++;
-      if (convCount >= 10) medal++;
-      if (convCount >= 50) medal++;
-      stats.push({
-        name,
-        vocabPassed,
-        convCount,
-        medal
-      });
-    }
-    setFriendStats(stats);
-    setLoading(false);
-  };
+  // *** HIGHLIGHT START: 新增模式切換的邏輯 (與主頁面相同) ***
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) { return savedTheme === 'dark'; }
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  });
 
   useEffect(() => {
-    if (userName) fetchFriends();
-    // eslint-disable-next-line
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(prev => !prev);
+  // *** HIGHLIGHT END ***
+
+  const [friendInput, setFriendInput] = useState('');
+  const [friends, setFriends] = useState([]);
+  const [friendStats, setFriendStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [msg, setMsg] = useState({ text: '', type: '' });
+
+  const fetchFriends = useCallback(async () => {
+    if (!userName) return;
+    setLoading(true);
+
+    const friendDoc = await getDoc(doc(db, 'Friends', userName));
+    const friendArr = friendDoc.exists() ? friendDoc.data().friends : [];
+    setFriends(friendArr);
+
+    const userList = [userName, ...friendArr];
+    if (userList.length === 0) {
+      setLoading(false);
+      return;
+    }
+
+    const statsPromises = userList.map(async (name) => {
+      const vocabQuery = query(collection(db, 'UserVocabulary', name, 'words'), where('passed', '==', true));
+      const convQuery = query(collection(db, 'Conversations'), where('user_name', '==', name));
+      
+      const [vocabSnap, convSnap] = await Promise.all([getDocs(vocabQuery), getDocs(convQuery)]);
+      
+      const vocabPassed = vocabSnap.size;
+      const convCount = convSnap.size;
+      const medalCount = MEDALS.filter(m => (m.type === 'vocab' && vocabPassed >= m.target) || (m.type === 'conversation' && convCount >= m.target)).length;
+
+      return { name, vocabPassed, convCount, medal: medalCount };
+    });
+
+    const stats = await Promise.all(statsPromises);
+    setFriendStats(stats);
+    setLoading(false);
   }, [userName]);
 
-  // 添加好友
+  useEffect(() => {
+    fetchFriends();
+  }, [fetchFriends]);
+
   async function handleAddFriend() {
-    setMsg('');
+    setMsg({ text: '', type: '' });
     const toAdd = friendInput.trim();
-    if (!toAdd || toAdd === userName) {
-      setMsg('請輸入正確的好友名稱');
+    if (!toAdd) {
+      setMsg({ text: '請輸入好友名稱', type: 'error' });
+      return;
+    }
+    if (toAdd === userName) {
+      setMsg({ text: '不能添加自己為好友', type: 'error' });
       return;
     }
     if (friends.includes(toAdd)) {
-      setMsg('已經是你的好友');
+      setMsg({ text: `${toAdd} 已經是你的好友`, type: 'info' });
       return;
     }
-    if (!allUsers.includes(toAdd)) {
-      setMsg('查無此用戶');
+
+    const userCheck = await getDoc(doc(db, 'Users', toAdd));
+    if (!userCheck.exists()) {
+      setMsg({ text: '查無此用戶', type: 'error' });
       return;
     }
+
     const newFriends = [...friends, toAdd];
-    await setDoc(doc(db, 'Friends', userName), { friends: newFriends });
+    await setDoc(doc(db, 'Friends', userName), { friends: newFriends }, { merge: true });
     setFriendInput('');
-    setMsg('好友添加成功！');
-    // 重新拉取所有資料（刷新排行榜與好友）
+    setMsg({ text: '好友添加成功！', type: 'success' });
     fetchFriends();
   }
 
-  // 排行榜排序
   const vocabRank = [...friendStats].sort((a, b) => b.vocabPassed - a.vocabPassed);
   const convRank = [...friendStats].sort((a, b) => b.convCount - a.convCount);
   const medalRank = [...friendStats].sort((a, b) => b.medal - a.medal);
 
   return (
     <div className="friend-container">
-      <h2>好友與排行榜</h2>
+      {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
+      <div className="friend-header">
+        <h2>好友與排行榜</h2>
+        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
       <div className="friend-welcome">歡迎，{userName}！</div>
+      {/* *** HIGHLIGHT END *** */}
+
       <div className="friend-add">
         <input
           className="friend-input"
@@ -108,69 +129,34 @@ function FriendPage({ userName }) {
         />
         <button className="friend-btn" onClick={handleAddFriend}>添加好友</button>
       </div>
-      {msg && <div className="friend-msg">{msg}</div>}
+      {msg.text && <div className={`friend-msg ${msg.type}`}>{msg.text}</div>}
 
       {loading ? (
-        <div className="friend-loading">載入中...</div>
+        <div className="friend-loading">載入排行榜中...</div>
       ) : (
-        <>
-          <div className="friend-list-title">單字學習排行榜</div>
-          <div className="friend-list">
-            <div className="friend-list-header">
-              <span>排名</span>
-              <span>名稱</span>
-              <span>單字</span>
-            </div>
-            {vocabRank.map((item, idx) => (
-              <div
-                key={item.name}
-                className={`friend-list-row${item.name === userName ? ' me' : ''}`}
-              >
-                <span>{idx + 1}</span>
-                <span>{item.name}</span>
-                <span>{item.vocabPassed}</span>
+        <div className="rankings-container">
+          {[{ title: '單字學習排行榜', data: vocabRank, field: 'vocabPassed', unit: '個' },
+            { title: '對話次數排行榜', data: convRank, field: 'convCount', unit: '次' },
+            { title: '勳章數排行榜', data: medalRank, field: 'medal', unit: '枚' }].map(rank => (
+            <div key={rank.title}>
+              <div className="friend-list-title">{rank.title}</div>
+              <div className="friend-list">
+                <div className="friend-list-header">
+                  <span>排名</span>
+                  <span>名稱</span>
+                  <span>{rank.field === 'vocabPassed' ? '單字數' : (rank.field === 'convCount' ? '對話數' : '勳章數')}</span>
+                </div>
+                {rank.data.map((item, idx) => (
+                  <div key={item.name} className={`friend-list-row${item.name === userName ? ' me' : ''}`}>
+                    <span className="rank-position">{idx + 1}</span>
+                    <span className="rank-name">{item.name}</span>
+                    <span className="rank-score">{item[rank.field]} {rank.unit}</span>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-
-          <div className="friend-list-title">對話次數排行榜</div>
-          <div className="friend-list">
-            <div className="friend-list-header">
-              <span>排名</span>
-              <span>名稱</span>
-              <span>對話</span>
             </div>
-            {convRank.map((item, idx) => (
-              <div
-                key={item.name}
-                className={`friend-list-row${item.name === userName ? ' me' : ''}`}
-              >
-                <span>{idx + 1}</span>
-                <span>{item.name}</span>
-                <span>{item.convCount}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className="friend-list-title">勳章數排行榜</div>
-          <div className="friend-list">
-            <div className="friend-list-header">
-              <span>排名</span>
-              <span>名稱</span>
-              <span>勳章</span>
-            </div>
-            {medalRank.map((item, idx) => (
-              <div
-                key={item.name}
-                className={`friend-list-row${item.name === userName ? ' me' : ''}`}
-              >
-                <span>{idx + 1}</span>
-                <span>{item.name}</span>
-                <span>{item.medal}</span>
-              </div>
-            ))}
-          </div>
-        </>
+          ))}
+        </div>
       )}
     </div>
   );

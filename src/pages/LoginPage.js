@@ -1,78 +1,111 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import './LoginPage.css';
 
 function LoginPage({ onLogin }) {
+  // *** HIGHLIGHT START: 新增模式切換的邏輯 (與主頁面相同) ***
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) { return savedTheme === 'dark'; }
+    return window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(prev => !prev);
+  // *** HIGHLIGHT END ***
+
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [msg, setMsg] = useState({ text: '', type: '' }); // 合併 error 和 success 狀態
   const navigate = useNavigate();
 
-  // 登入
   async function handleLogin(e) {
     e.preventDefault();
-    setError('');
-    setSuccess('');
+    setMsg({ text: '', type: '' });
+    if (!userName || !password) {
+      setMsg({ text: '請輸入名稱和密碼', type: 'error' });
+      return;
+    }
+
     const docRef = doc(db, "Users", userName.trim());
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      const data = docSnap.data();
-      if (password === data.password) {
-        if (onLogin) onLogin(userName);
-        navigate('/');
-      } else {
-        setError('密碼錯誤');
-      }
+
+    if (docSnap.exists() && password === docSnap.data().password) {
+      if (onLogin) onLogin(userName.trim());
+      navigate('/');
     } else {
-      setError('找不到帳號');
+      setMsg({ text: '名稱或密碼錯誤', type: 'error' });
     }
   }
 
-  // 註冊
-  async function handleRegister() {
-    setError('');
-    setSuccess('');
-    const docRef = doc(db, "Users", userName.trim());
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      setError('名稱已存在');
+  async function handleRegister(e) {
+    e.preventDefault();
+    setMsg({ text: '', type: '' });
+    if (!userName || !password) {
+      setMsg({ text: '請輸入名稱和密碼', type: 'error' });
       return;
     }
-    await setDoc(docRef, { user_name: userName, password });
-    setSuccess('註冊成功，請登入');
+    
+    const docRef = doc(db, "Users", userName.trim());
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      setMsg({ text: '此用戶名稱已被註冊', type: 'error' });
+      return;
+    }
+    
+    await setDoc(docRef, { user_name: userName.trim(), password });
+    setMsg({ text: '註冊成功，請登入', type: 'success' });
   }
 
   return (
     <div className="login-container">
-      <h2>登入/註冊</h2>
+      {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
+      <div className="login-header">
+        <h2>登入 / 註冊</h2>
+        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
+      {/* *** HIGHLIGHT END *** */}
+      
       <form onSubmit={handleLogin} className="login-form">
-        <div>
-          <label>名稱：</label>
+        <div className="form-group">
+          <label htmlFor="username">用戶名稱</label>
           <input
+            id="username"
             value={userName}
             onChange={e => setUserName(e.target.value)}
             required
           />
         </div>
-        <div>
-          <label>密碼：</label>
+        <div className="form-group">
+          <label htmlFor="password">密碼</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
             required
           />
         </div>
-        <button type="submit">登入</button>
-        <button type="button" onClick={handleRegister} style={{ marginLeft: 10 }}>
-          註冊
-        </button>
+        <div className="form-buttons">
+          <button type="submit">登入</button>
+          <button type="button" onClick={handleRegister}>註冊</button>
+        </div>
       </form>
-      {error && <div className="login-message error">{error}</div>}
-      {success && <div className="login-message success">{success}</div>}
+      {msg.text && <div className={`login-message ${msg.type}`}>{msg.text}</div>}
     </div>
   );
 }

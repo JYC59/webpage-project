@@ -1,114 +1,236 @@
+/* --- 1. CSS 變數定義 (與主頁面共用，在此重申以確保獨立性) --- */
+:root {
+  /* ... (此處變數與 MainPage.css 相同，若 CSS 已全域載入則可省略) ... */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FE;
+  --bg-tertiary: #FFFFFF;
+  --text-primary: #212529;
+  --text-secondary: #5C677D;
+  --text-accent: #3949AB;
+  --text-on-accent: #FFFFFF;
+  --color-primary: #5C6BC0;
+  --color-primary-hover: #3949AB;
+  --shadow-color: rgba(60, 80, 160, 0.1);
+  --shadow-soft: 0 4px 24px var(--shadow-color);
+  --border-color: #DEE2E6;
+  
+  /* 新增：對話框專用變數 */
+  --user-msg-bg: #E3E6FC;
+  --user-msg-text: #212529;
+  --assistant-msg-bg: #F1E4F5;
+  --assistant-msg-text: #212529;
+}
+
+body.dark-mode {
+  /* ... (此處變數與 MainPage.css 相同) ... */
+  --bg-primary: #1A1D24;
+  --bg-secondary: #252A34;
+  --bg-tertiary: #1F222A;
+  --text-primary: #EAEBEE;
+  --text-secondary: #98A1B3;
+  --text-accent: #7986CB;
+  --text-on-accent: #FFFFFF;
+  --color-primary: #5C6BC0;
+  --color-primary-hover: #7986CB;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+  --border-color: #495057;
+
+  /* 新增：對話框專用變數 (深夜模式) */
+  --user-msg-bg: #3E4452;
+  --user-msg-text: #EAEBEE;
+  --assistant-msg-bg: #4A3E52;
+  --assistant-msg-text: #EAEBEE;
+}
+
+
+/* --- 2. 元件樣式 (使用變數) --- */
 .aichat-container {
   max-width: 520px;
   margin: 40px auto;
-  background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-  padding: 32px 32px 60px 32px;
-  font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+  background: var(--bg-tertiary);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  padding: 32px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.aichat-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.aichat-header h2 {
+  color: var(--text-primary);
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.aichat-welcome {
+  text-align: center;
+  font-size: 18px;
+  color: var(--text-accent);
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+
+/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
+.theme-toggle-button {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-button:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .aichat-scenarios {
   display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 24px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .aichat-scenario-btn {
-  padding: 7px 18px;
-  border-radius: 7px;
-  border: 1.5px solid #3949ab;
-  background: #fff;
-  color: #3949ab;
+  padding: 8px 20px;
+  border-radius: 20px; /* 膠囊形狀 */
+  border: 1.5px solid var(--color-primary);
+  background: var(--bg-tertiary);
+  color: var(--color-primary);
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border 0.15s;
+  transition: all 0.2s ease;
 }
 
 .aichat-scenario-btn.selected,
 .aichat-scenario-btn:hover {
-  background: #3949ab;
-  color: #fff;
-  border: 1.5px solid #3949ab;
+  background: var(--color-primary);
+  color: var(--text-on-accent);
+  border-color: var(--color-primary);
+}
+.aichat-scenario-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .aichat-chatbox {
-  min-height: 220px;
-  max-height: 320px;
-  background: #f6f8fc;
-  border-radius: 8px;
+  min-height: 250px;
+  max-height: 350px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .aichat-msg {
-  margin: 8px 0;
-  max-width: 75%;
+  margin-bottom: 12px;
+  max-width: 80%;
   word-break: break-word;
-  padding: 8px 12px;
-  border-radius: 7px;
-  font-size: 15px;
-  display: inline-block;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .aichat-msg.user {
-  background: #c5cae9;
-  color: #222;
+  background: var(--user-msg-bg);
+  color: var(--user-msg-text);
   align-self: flex-end;
-  float: right;
-  clear: both;
+  border-bottom-right-radius: 4px; /* 對話框樣式微調 */
 }
 
 .aichat-msg.assistant {
-  background: #e1bee7;
-  color: #222;
+  background: var(--assistant-msg-bg);
+  color: var(--assistant-msg-text);
   align-self: flex-start;
-  float: left;
-  clear: both;
+  border-bottom-left-radius: 4px; /* 對話框樣式微調 */
 }
 
 .aichat-msg-label {
   font-weight: bold;
-  margin-right: 2px;
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  opacity: 0.8;
 }
 
 .aichat-loading {
-  color: #888;
+  color: var(--text-secondary);
   font-style: italic;
-  margin-top: 4px;
+  padding: 10px;
+  text-align: center;
 }
 
 .aichat-inputbox {
   display: flex;
-  gap: 8px;
+  gap: 10px;
+  align-items: flex-end;
 }
 
 .aichat-input {
   flex: 1;
-  border-radius: 6px;
-  border: 1px solid #bdbdbd;
-  padding: 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-color);
+  padding: 12px;
   font-size: 16px;
   resize: none;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.aichat-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
 .aichat-sendbtn {
-  padding: 8px 18px;
-  border-radius: 6px;
-  background: #3949ab;
-  color: #fff;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--color-primary);
+  color: var(--text-on-accent);
   font-weight: 600;
   border: none;
   font-size: 16px;
   cursor: pointer;
-  transition: background 0.18s;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.aichat-sendbtn:hover {
+  background-color: var(--color-primary-hover);
+}
+.aichat-sendbtn:disabled {
+  background-color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
-.aichat-sendbtn:disabled {
-  background: #bdbdbd;
-  cursor: not-allowed;
+/* 響應式設計 */
+@media (max-width: 500px) {
+  .aichat-container {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 24px 16px;
+    box-shadow: none;
+  }
 }

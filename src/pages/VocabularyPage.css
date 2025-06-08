@@ -1,114 +1,223 @@
+/* --- 1. CSS 變數定義 (與其他頁面共用) --- */
+:root {
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8F9FE;
+  --bg-tertiary: #FFFFFF;
+  --text-primary: #212529;
+  --text-secondary: #5C677D;
+  --text-accent: #3949AB;
+  --text-on-accent: #FFFFFF;
+  --text-placeholder: #AEB5C4;
+  --border-color: #DEE2E6;
+  --shadow-color: rgba(60, 80, 160, 0.1);
+  --shadow-soft: 0 4px 24px var(--shadow-color);
+  --shadow-light: 0 2px 8px var(--shadow-color);
+  
+  /* 狀態顏色 */
+  --color-primary: #5C6BC0;
+  --color-primary-hover: #3949AB;
+  --color-success: #43a047;
+  --color-success-hover: #2e7d32;
+  --color-danger: #d32f2f;
+  --color-danger-hover: #c62828;
+  --text-success: #2e7031;
+}
+
+body.dark-mode {
+  --bg-primary: #1A1D24;
+  --bg-secondary: #252A34;
+  --bg-tertiary: #1F222A;
+  --text-primary: #EAEBEE;
+  --text-secondary: #98A1B3;
+  --text-accent: #7986CB;
+  --text-on-accent: #FFFFFF;
+  --text-placeholder: #5C677D;
+  --border-color: #495057;
+  --shadow-color: rgba(0, 0, 0, 0.2);
+
+  /* 狀態顏色 (深夜模式) */
+  --color-primary: #5C6BC0;
+  --color-primary-hover: #7986CB;
+  --color-success: #4CAF50;
+  --color-success-hover: #66BB6A;
+  --color-danger: #EF5350;
+  --color-danger-hover: #F44336;
+  --text-success: #66BB6A;
+}
+
+
+/* --- 2. 元件樣式 (使用變數) --- */
 .vocab-container {
-    max-width: 520px;
-    margin: 40px auto;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-    padding: 32px 32px 60px 32px;
-    font-family: 'Segoe UI', 'Roboto', 'Arial', sans-serif;
-    text-align: center;
+  max-width: 520px;
+  margin: 40px auto;
+  background: var(--bg-tertiary);
+  border-radius: 20px;
+  box-shadow: var(--shadow-soft);
+  padding: 32px;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  text-align: center;
+}
+
+.vocab-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.vocab-header h2 {
+  color: var(--text-primary);
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
+.theme-toggle-button {
+  position: absolute; right: 0; top: 50%;
+  transform: translateY(-50%); background: transparent; border: none;
+  cursor: pointer; font-size: 24px; padding: 8px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; line-height: 1;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.theme-toggle-button:hover {
+  background-color: var(--bg-secondary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.vocab-welcome {
+  font-size: 18px;
+  color: var(--text-accent);
+  margin-bottom: 28px;
+  font-weight: 500;
+}
+
+.vocab-loading {
+  color: var(--text-placeholder);
+  font-style: italic;
+  margin: 40px 0;
+  font-size: 16px;
+}
+
+.vocab-card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 24px 20px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-light);
+  max-width: 380px;
+}
+
+.vocab-question {
+  margin-bottom: 20px;
+}
+
+.vocab-label {
+  font-weight: bold;
+  color: var(--text-accent);
+  margin-right: 6px;
+  font-size: 18px;
+}
+
+.vocab-english {
+  font-size: 24px;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.vocab-answer {
+  margin-bottom: 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.vocab-input {
+  padding: 10px 12px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-color);
+  width: 180px;
+  text-align: center;
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+.vocab-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.vocab-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: var(--text-on-accent);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.vocab-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-light);
+}
+.vocab-btn:disabled {
+  background-color: var(--text-secondary);
+  cursor: not-allowed;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+.vocab-result {
+  margin-top: 20px;
+  font-size: 16px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+.vocab-result .vocab-label {
+  font-size: 16px;
+}
+
+.vocab-chinese {
+  color: var(--text-success);
+  font-weight: bold;
+  font-size: 18px;
+  margin-left: 4px;
+}
+
+.vocab-pass-btns {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.vocab-btn.pass { background: var(--color-success); }
+.vocab-btn.pass:hover { background: var(--color-success-hover); }
+
+.vocab-btn.fail { background: var(--color-danger); }
+.vocab-btn.fail:hover { background: var(--color-danger-hover); }
+
+.vocab-finish {
+  color: var(--text-success);
+  font-size: 20px;
+  margin-top: 40px;
+  font-weight: bold;
+}
+
+/* 響應式設計 */
+@media (max-width: 500px) {
+  .vocab-container {
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    min-height: 100vh;
+    padding: 24px 16px;
+    box-shadow: none;
   }
-  
-  .vocab-welcome {
-    font-size: 17px;
-    color: #3949ab;
-    margin-bottom: 18px;
-    font-weight: 500;
-  }
-  
-  .vocab-loading {
-    color: #888;
-    font-style: italic;
-    margin: 20px 0;
-  }
-  
-  .vocab-card {
-    background: #f6f8fc;
-    border-radius: 10px;
-    padding: 18px 16px 20px 16px;
-    margin: 0 auto;
-    box-shadow: 0 1px 4px rgba(60,80,160,0.08);
-    max-width: 340px;
-  }
-  
-  .vocab-question {
-    font-size: 18px;
-    margin-bottom: 16px;
-  }
-  
-  .vocab-label {
-    font-weight: bold;
-    color: #3949ab;
-    margin-right: 4px;
-  }
-  
-  .vocab-english {
-    font-size: 22px;
-    letter-spacing: 1px;
-    color: #26326a;
-  }
-  
-  .vocab-answer {
-    margin-bottom: 12px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-  }
-  
-  .vocab-input {
-    padding: 8px 10px;
-    font-size: 16px;
-    border-radius: 6px;
-    border: 1px solid #bdbdbd;
-    width: 140px;
-  }
-  
-  .vocab-btn {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    background: #3949ab;
-    color: #fff;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.18s;
-  }
-  
-  .vocab-btn:disabled {
-    background: #bdbdbd;
-    cursor: not-allowed;
-  }
-  
-  .vocab-result {
-    margin-top: 12px;
-    font-size: 16px;
-  }
-  
-  .vocab-chinese {
-    color: #2e7031;
-    font-weight: bold;
-    margin-left: 4px;
-  }
-  
-  .vocab-pass-btns {
-    margin-top: 10px;
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-  }
-  
-  .vocab-btn.pass {
-    background: #43a047;
-  }
-  .vocab-btn.fail {
-    background: #d32f2f;
-  }
-  
-  .vocab-finish {
-    color: #388e3c;
-    font-size: 18px;
-    margin-top: 38px;
-    font-weight: bold;
-  }
-  
+}

@@ -4,6 +4,30 @@ import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 function VocabularyPage({ userName }) {
+  // *** HIGHLIGHT START: 新增模式切換的邏輯 (與主頁面相同) ***
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      return savedTheme === 'dark';
+    }
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDarkMode) {
+      document.body.classList.add('dark-mode');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.body.classList.remove('dark-mode');
+      localStorage.setItem('theme', 'light');
+    }
+  }, [isDarkMode]);
+
+  const toggleTheme = () => {
+    setIsDarkMode(prevMode => !prevMode);
+  };
+  // *** HIGHLIGHT END ***
+
   const [vocabList, setVocabList] = useState([]);
   const [currentWord, setCurrentWord] = useState(null);
   const [userPassed, setUserPassed] = useState({});
@@ -12,19 +36,18 @@ function VocabularyPage({ userName }) {
   const [loading, setLoading] = useState(true);
   const [passLoading, setPassLoading] = useState(false);
 
-  // 取得今日日期字串
   const today = new Date();
-  const dateStr = today.toISOString().slice(0, 10); // yyyy-mm-dd
+  const dateStr = today.toISOString().slice(0, 10);
 
-  // 取得單字庫和用戶學習紀錄
   useEffect(() => {
     async function fetchData() {
+      if (!userName) {
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       const vocabSnap = await getDocs(collection(db, 'Vocabulary'));
-      const words = [];
-      vocabSnap.forEach(doc => {
-        words.push({ id: doc.id, ...doc.data() });
-      });
+      const words = vocabSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
       const userWords = {};
       const userWordsSnap = await getDocs(collection(db, 'UserVocabulary', userName, 'words'));
@@ -36,12 +59,11 @@ function VocabularyPage({ userName }) {
       setUserPassed(userWords);
       setLoading(false);
     }
-    if (userName) fetchData();
+    fetchData();
   }, [userName]);
 
-  // 抽一個未通過的單字
   useEffect(() => {
-    if (vocabList.length === 0) return;
+    if (vocabList.length === 0 && !loading) return;
     const notPassed = vocabList.filter(word => !userPassed[word.id]);
     if (notPassed.length === 0) {
       setCurrentWord(null);
@@ -51,45 +73,46 @@ function VocabularyPage({ userName }) {
     }
     setInput('');
     setShowAnswer(false);
-  }, [vocabList, userPassed]);
+  }, [userPassed, vocabList, loading]);
 
-  // 標記學會或未學會，並自動跳下一題
   async function handlePass(passed) {
     if (!currentWord) return;
     setPassLoading(true);
-    await setDoc(
-      doc(db, 'UserVocabulary', userName, 'words', currentWord.id),
-      { passed }
-    );
-    setUserPassed(prev => ({ ...prev, [currentWord.id]: passed }));
-
-    // 自動標記每日挑戰（只要今天還沒完成且本題是學會就標記）
-    if (passed) {
+    try {
       await setDoc(
-        doc(db, 'DailyChallenge', dateStr, 'users', userName),
-        { completed: true }
+        doc(db, 'UserVocabulary', userName, 'words', currentWord.id),
+        { passed }
       );
+      if (passed) {
+        await setDoc(
+          doc(db, 'DailyChallenge', dateStr, 'users', userName),
+          { completed: true }
+        );
+      }
+      setUserPassed(prev => ({ ...prev, [currentWord.id]: passed }));
+    } catch (error) {
+      console.error("Error updating vocabulary status:", error);
     }
-
     setPassLoading(false);
-    // 不需要額外 setCurrentWord，因為 userPassed 改變後 useEffect 會自動抽下一題
-  }
-
-  if (loading) {
-    return (
-      <div className="vocab-container">
-        <h2>學習單字</h2>
-        <div className="vocab-welcome">歡迎，{userName}！</div>
-        <div className="vocab-loading">載入中...</div>
-      </div>
-    );
   }
 
   return (
     <div className="vocab-container">
-      <h2>學習單字</h2>
-      <div className="vocab-welcome">歡迎，{userName}！</div>
-      {currentWord ? (
+      {/* *** HIGHLIGHT START: 新增 Header，包含標題和切換按鈕 *** */}
+      <div className="vocab-header">
+        <h2>學習單字</h2>
+        <button onClick={toggleTheme} className="theme-toggle-button" aria-label="切換主題">
+          {isDarkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
+      <div className="vocab-welcome">
+        歡迎，{userName}！
+      </div>
+      {/* *** HIGHLIGHT END *** */}
+      
+      {loading ? (
+        <div className="vocab-loading">載入單字庫中...</div>
+      ) : currentWord ? (
         <div className="vocab-card">
           <div className="vocab-question">
             <span className="vocab-label">英文：</span>
@@ -122,21 +145,21 @@ function VocabularyPage({ userName }) {
                   onClick={() => handlePass(true)}
                   disabled={passLoading}
                 >
-                  我學會了
+                  {passLoading ? '...' : '我學會了'}
                 </button>
                 <button
                   className="vocab-btn fail"
                   onClick={() => handlePass(false)}
                   disabled={passLoading}
                 >
-                  還沒學會
+                  {passLoading ? '...' : '還沒學會'}
                 </button>
               </div>
             </div>
           )}
         </div>
       ) : (
-        <div className="vocab-finish">你已經學會所有單字，太棒了！</div>
+        <div className="vocab-finish">🎉 你已經學會所有單字，太棒了！</div>
       )}
     </div>
   );
