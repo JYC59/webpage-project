@@ -9,4 +9,3 @@ npm install -g firebase-tools
 npm install axios  
 npm install openai  
 
-### Jessica is testing
