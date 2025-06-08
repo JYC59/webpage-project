@@ -59,29 +59,6 @@ body.dark-mode {
   text-align: center;
 }
 
-.friend-header {
-  display: flex; justify-content: center; align-items: center;
-  position: relative; margin-bottom: 12px;
-}
-
-.friend-header h2 {
-  color: var(--text-primary); letter-spacing: 1.5px;
-  font-weight: 600; margin: 0;
-}
-
-/* 主頁面的 theme-toggle-button 樣式若已全域載入，則此處可省略 */
-.theme-toggle-button {
-  position: absolute; right: 0; top: 50%;
-  transform: translateY(-50%); background: transparent; border: none;
-  cursor: pointer; font-size: 24px; padding: 8px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; line-height: 1;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-.theme-toggle-button:hover {
-  background-color: var(--bg-secondary);
-  transform: translateY(-50%) scale(1.1);
-}
-
 .friend-welcome {
   font-size: 18px; color: var(--text-accent);
   margin-bottom: 28px; font-weight: 500;
